@@ -4,8 +4,8 @@ SERVE_IP   ?= localhost
 SERVE_PORT ?= 3020
 
 # Only "LINUX" tested for now
-INCLUDE_LINUX := 1
-#INCLUDE_MACOS := 1
+#INCLUDE_LINUX := 1
+INCLUDE_MACOS := 1
 #INCLUDE_WIN32 := 1
 
 # Enable if you like, will fix this so dependencies are more automatic
@@ -17,13 +17,13 @@ INCLUDE_LINUX := 1
 ######################################################################
 
 SHELL     := bash
-BUILD_TAG := $(shell echo `git rev-parse --short HEAD`-`[[ -n $$(git status -s) ]] && echo 'dirty' || echo 'clean'` on `date --rfc-3339=seconds`)
+BUILD_TAG := $(shell echo `git rev-parse --short HEAD`-`[[ -n $$(git status -s) ]] && echo 'dirty' || echo 'clean'` on `date "+%Y-%m-%d %H:%M:%S"`)
 
 CC             ?= gcc
-CFLAGS         := -D_REENTRANT -DARCWEB -Wall -Werror -DBUILD_TAG="${BUILD_TAG}" -Isrc -Ibuild/generated-src
+CFLAGS         := -D_REENTRANT -DARCWEB -Wall -DBUILD_TAG="${BUILD_TAG}" -Isrc -Ibuild/generated-src
 CFLAGS_WASM    := -sUSE_ZLIB=1 -sUSE_SDL=2 -Ibuild/generated-src
-LINKFLAGS      := -lz -lSDL2 -lm -lGL -lGLU
-LINKFLAGS_WASM := -sUSE_SDL=2 -sALLOW_MEMORY_GROWTH=1 -sTOTAL_MEMORY=32768000 -sFORCE_FILESYSTEM -sUSE_WEBGL2=1 -sEXPORTED_RUNTIME_METHODS=[\"ccall\"] -lidbfs.js -lz
+LINKFLAGS      := -sUSE_ZLIB=1  -lSDL2 -lm -lGL -lGLU
+LINKFLAGS_WASM := -sUSE_SDL=2 -sALLOW_MEMORY_GROWTH=1 -sTOTAL_MEMORY=32768000 -sFORCE_FILESYSTEM -sUSE_WEBGL2=1 -sEXPORTED_RUNTIME_METHODS=[\"ccall\"] -lidbfs.js -sUSE_ZLIB=1 
 DATA           := ddnoise
 ifdef DEBUG
   CFLAGS += -D_DEBUG -DDEBUG_LOG -O0 -g3
@@ -156,7 +156,7 @@ build/wasm/arculator.html: ${OBJS_WASM} web/shell.html
 
 build/wasm/arculator.data.js: build/wasm/arculator.data
 build/wasm/arculator.data: ${DATA}
-	${EMSDK}/upstream/emscripten/tools/file_packager $@ --js-output=$@.js --preload $^
+	python3 /opt/homebrew/Cellar/emscripten/5.0.6/libexec/tools/file_packager.py $@ --js-output=$@.js --preload $^
 
 build/wasm/%.o: src/%.c
 	@mkdir -p $(@D)

@@ -1,6 +1,7 @@
 /*Arculator 2.2 by Sarah Walker
   Inmos G332/G335 emulation*/
 #include <string.h>
+#include <stdlib.h>
 #include "arc.h"
 #include "g332.h"
 #include "plat_video.h"

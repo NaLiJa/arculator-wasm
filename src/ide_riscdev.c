@@ -32,6 +32,9 @@ typedef struct riscdev_ide_t
 	ide_t ide;
 } riscdev_ide_t;
 
+static void riscdev_ide_irq_raise(ide_t *ide);
+static void riscdev_ide_irq_clear(ide_t *ide);
+
 static int riscdev_ide_init(struct podule_t *podule)
 {
 	FILE *f;
